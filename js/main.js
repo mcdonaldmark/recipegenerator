@@ -124,26 +124,7 @@ async function updateRecipes() {
     return bMatch - aMatch;
   });
 
-  // Render each recipe with proper .recipe-card-content wrapper
-  resultsContainer.innerHTML = "";
-  recipes.forEach(recipe => {
-    const card = document.createElement("div");
-    card.className = "recipe-card";
-
-    card.innerHTML = `
-      <img src="${recipe.image}" alt="${recipe.title}" />
-      <button class="favorite-btn">❤️</button>
-      <button class="share-btn">🔗</button>
-      <div class="recipe-card-content">
-        <h3>${recipe.title}</h3>
-        <p>Ingredients: ${recipe.ingredients.join(", ")}</p>
-        <button class="missing-btn">Missing Items</button>
-      </div>
-    `;
-
-    resultsContainer.appendChild(card);
-  });
-
+  renderRecipes(recipes, ingredients);
   saveState();
 }
 
