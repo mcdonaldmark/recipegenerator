@@ -1,12 +1,17 @@
+// ==============================
 // shopping-list.js
+// ==============================
 
 const SHOPPING_LIST_KEY = "shoppingList";
 
-// Add missing ingredients to the shopping list (no duplicates)
+// ==============================
+// Add Missing Ingredients to List
+// ==============================
+
 export function addMissingIngredientsToList(missingIngredients) {
   const currentList = JSON.parse(localStorage.getItem(SHOPPING_LIST_KEY)) || [];
 
-  missingIngredients.forEach(ing => {
+  missingIngredients.forEach((ing) => {
     const normalized = ing.toLowerCase().trim();
     if (!currentList.includes(normalized)) {
       currentList.push(normalized);
@@ -16,12 +21,18 @@ export function addMissingIngredientsToList(missingIngredients) {
   localStorage.setItem(SHOPPING_LIST_KEY, JSON.stringify(currentList));
 }
 
-// Get shopping list
+// ==============================
+// Get Shopping List
+// ==============================
+
 export function getShoppingList() {
   return JSON.parse(localStorage.getItem(SHOPPING_LIST_KEY)) || [];
 }
 
-// Remove an ingredient from the shopping list
+// ==============================
+// Remove Ingredient from List
+// ==============================
+
 export function removeIngredientFromList(ingredient) {
   const currentList = JSON.parse(localStorage.getItem(SHOPPING_LIST_KEY)) || [];
   const index = currentList.indexOf(ingredient.toLowerCase().trim());
@@ -31,7 +42,10 @@ export function removeIngredientFromList(ingredient) {
   }
 }
 
-// Clear entire shopping list
+// ==============================
+// Clear Entire Shopping List
+// ==============================
+
 export function clearShoppingList() {
   localStorage.removeItem(SHOPPING_LIST_KEY);
 }

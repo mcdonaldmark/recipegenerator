@@ -1,17 +1,17 @@
+// ==============================
 // shopping-list-main.js
+// ==============================
+
 import { getShoppingList, removeIngredientFromList, clearShoppingList } from "./shopping-list.js";
 import { updateShoppingCount } from "./shopping-cart.js";
 
 const shoppingListContainer = document.getElementById("shoppingList");
 const clearBtn = document.getElementById("clearShoppingListBtn");
 
-// ➜ Your USDA API key goes here
 const FDC_API_KEY = "VvAc3udjrHDwwDP71isedePavcgetySZnFaQ8dLv";
 
-// Cache nutrition data so we don’t fetch the same item twice
 let nutritionCache = JSON.parse(localStorage.getItem("nutritionCache")) || {};
 
-// --- Manual overrides for simple ingredients ---
 const ZERO_NUTRITION_OVERRIDES = {
   water: { calories: 0, fat: 0, carbs: 0, protein: 0 },
   salt: { calories: 0, fat: 0, carbs: 0, protein: 0 },
@@ -20,21 +20,20 @@ const ZERO_NUTRITION_OVERRIDES = {
   sugar: { calories: 400, fat: 0, carbs: 100, protein: 0 }
 };
 
-// Fetch nutrition info from USDA FoodData Central
+// ==============================
+// Fetch Nutrition Data from USDA
+// ==============================
+
 async function fetchNutritionData(ingredient) {
   const key = ingredient.toLowerCase().trim();
 
-  // Check manual overrides first
   if (ZERO_NUTRITION_OVERRIDES[key]) {
     nutritionCache[key] = ZERO_NUTRITION_OVERRIDES[key];
     localStorage.setItem("nutritionCache", JSON.stringify(nutritionCache));
     return ZERO_NUTRITION_OVERRIDES[key];
   }
 
-  // If cached → return immediately
-  if (nutritionCache[key]) {
-    return nutritionCache[key];
-  }
+  if (nutritionCache[key]) return nutritionCache[key];
 
   try {
     const searchUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${FDC_API_KEY}&query=${encodeURIComponent(
@@ -44,44 +43,26 @@ async function fetchNutritionData(ingredient) {
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
 
-    if (!searchData.foods || searchData.foods.length === 0) {
-      return null;
-    }
+    if (!searchData.foods || searchData.foods.length === 0) return null;
 
     const food = searchData.foods[0];
-    const fdcId = food.fdcId;
-
-    const detailUrl = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${FDC_API_KEY}`;
+    const detailUrl = `https://api.nal.usda.gov/fdc/v1/food/${food.fdcId}?api_key=${FDC_API_KEY}`;
     const detailRes = await fetch(detailUrl);
     const detailData = await detailRes.json();
 
     const nutrients = {};
-    if (detailData.foodNutrients) {
-      detailData.foodNutrients.forEach(n => {
-        nutrients[n.nutrientName.toLowerCase()] = {
-          value: n.value,
-          unit: n.unitName
-        };
-      });
-    }
+    detailData.foodNutrients?.forEach(n => {
+      nutrients[n.nutrientName.toLowerCase()] = {
+        value: n.value,
+        unit: n.unitName
+      };
+    });
 
     const nutrition = {
-      calories:
-        nutrients["energy"]?.value ||
-        nutrients["energy (kcal)"]?.value ||
-        "N/A",
-      fat:
-        nutrients["total lipid (fat)"]?.value ||
-        nutrients["fat"]?.value ||
-        "N/A",
-      carbs:
-        nutrients["carbohydrate, by difference"]?.value ||
-        nutrients["carbohydrates"]?.value ||
-        "N/A",
-      protein:
-        nutrients["protein"]?.value ||
-        nutrients["proteins"]?.value ||
-        "N/A",
+      calories: nutrients["energy"]?.value || nutrients["energy (kcal)"]?.value || "N/A",
+      fat: nutrients["total lipid (fat)"]?.value || nutrients["fat"]?.value || "N/A",
+      carbs: nutrients["carbohydrate, by difference"]?.value || nutrients["carbohydrates"]?.value || "N/A",
+      protein: nutrients["protein"]?.value || nutrients["proteins"]?.value || "N/A",
     };
 
     nutritionCache[key] = nutrition;
@@ -94,7 +75,9 @@ async function fetchNutritionData(ingredient) {
   }
 }
 
-// Render the shopping list
+// ==============================
+// Render Shopping List
+// ==============================
 async function renderShoppingList() {
   const list = getShoppingList();
   shoppingListContainer.innerHTML = "";
@@ -105,7 +88,6 @@ async function renderShoppingList() {
     return;
   }
 
-  // First create all list items immediately
   const liElements = list.map(ingredient => {
     const li = document.createElement("li");
     li.classList.add("fade-in");
@@ -118,7 +100,6 @@ async function renderShoppingList() {
     return { ingredient, li };
   });
 
-  // Fetch nutrition data in parallel
   await Promise.all(
     liElements.map(async ({ ingredient, li }) => {
       const nutrition = await fetchNutritionData(ingredient);
@@ -137,7 +118,6 @@ async function renderShoppingList() {
         `;
       }
 
-      // Remove button functionality
       li.querySelector(".remove-btn").addEventListener("click", () => {
         removeIngredientFromList(ingredient);
         renderShoppingList();
@@ -149,12 +129,16 @@ async function renderShoppingList() {
   updateShoppingCount();
 }
 
-// Clear list button
+// ==============================
+// Clear Shopping List
+// ==============================
 clearBtn.addEventListener("click", () => {
   clearShoppingList();
   renderShoppingList();
   updateShoppingCount();
 });
 
-// Initial render
+// ==============================
+// Initial Render
+// ==============================
 renderShoppingList();

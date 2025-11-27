@@ -1,18 +1,30 @@
+// ==============================
 // js/favorites-main.js
+// ==============================
+
 import { getFavorites } from "./favorites.js";
 
 const FAVORITES_KEY = "favoriteRecipes";
 const favoritesList = document.querySelector("#favoritesList");
 
-// Toggle recipe in favorites
+// ==============================
+// Toggle Recipe in Favorites
+// ==============================
+
 function toggleFavorite(recipeId) {
   let favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
-  favorites = favorites.filter(fav => fav.id !== recipeId);
+
+  favorites = favorites.filter((fav) => fav.id !== recipeId);
+
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  renderFavorites(); // Re-render after removal
+
+  renderFavorites();
 }
 
-// Share handler
+// ==============================
+// Share Recipe
+// ==============================
+
 function shareRecipe(recipe) {
   const url = `https://www.themealdb.com/meal/${recipe.id}`;
   const text = `Check out this recipe: ${recipe.title}`;
@@ -25,7 +37,10 @@ function shareRecipe(recipe) {
   }
 }
 
-// Render favorites like index page with ingredients list
+// ==============================
+// Render Favorites List
+// ==============================
+
 export function renderFavorites() {
   const favorites = getFavorites();
   favoritesList.innerHTML = "";
@@ -35,11 +50,10 @@ export function renderFavorites() {
     return;
   }
 
-  favorites.forEach(recipe => {
+  favorites.forEach((recipe) => {
     const card = document.createElement("div");
     card.classList.add("recipe-card", "fade-in");
 
-    // Build ingredients list
     const ingredients = recipe.ingredients || [];
     const ingredientListHTML = ingredients.length
       ? `<p><strong>Ingredients:</strong> ${ingredients.join(", ")}</p>`
@@ -56,24 +70,20 @@ export function renderFavorites() {
       </div>
     `;
 
-    // Click card opens recipe page
     card.addEventListener("click", (e) => {
       if (!e.target.classList.contains("favorite-btn") &&
-          !e.target.classList.contains("share-btn")) 
-      {
+          !e.target.classList.contains("share-btn")) {
         const recipeUrl = `https://www.themealdb.com/meal/${recipe.id}`;
         window.open(recipeUrl, "_blank");
       }
     });
 
-    // Favorite button removes recipe
     const favBtn = card.querySelector(".favorite-btn");
     favBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
+      e.stopPropagation(); 
       toggleFavorite(recipe.id);
     });
 
-    // Share button
     const shareBtn = card.querySelector(".share-btn");
     shareBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -84,5 +94,7 @@ export function renderFavorites() {
   });
 }
 
-// Initial render
+// ==============================
+// Initial Render
+// ==============================
 renderFavorites();

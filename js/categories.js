@@ -1,18 +1,23 @@
+// ==============================
 // js/categories.js
+// ==============================
 
 const categoriesList = document.getElementById("categoriesList");
 const categoryResults = document.getElementById("categoryResults");
 
-// Load all categories from TheMealDB
+// ==============================
+// Load and Render Categories
+// ==============================
+
 async function loadCategories() {
     try {
         const res = await fetch("https://www.themealdb.com/api/json/v1/1/categories.php");
         const data = await res.json();
-        const categories = data.categories;
+        const categories = data.categories || [];
 
-        categoriesList.innerHTML = "";
+        categoriesList.innerHTML = ""; // Clear existing content
 
-        categories.forEach(cat => {
+        categories.forEach((cat) => {
             const card = document.createElement("div");
             card.classList.add("category-card");
 
@@ -21,7 +26,9 @@ async function loadCategories() {
                 <h3>${cat.strCategory}</h3>
             `;
 
+            // Click event to load meals in this category
             card.addEventListener("click", () => loadMealsByCategory(cat.strCategory));
+
             categoriesList.appendChild(card);
         });
 
@@ -31,7 +38,10 @@ async function loadCategories() {
     }
 }
 
-// Load meals by category
+// ==============================
+// Load and Render Meals by Category
+// ==============================
+
 async function loadMealsByCategory(category) {
     try {
         const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`);
@@ -40,7 +50,7 @@ async function loadMealsByCategory(category) {
 
         categoryResults.innerHTML = "";
 
-        meals.forEach(meal => {
+        meals.forEach((meal) => {
             const card = document.createElement("div");
             card.classList.add("recipe-card", "fade-in");
 
@@ -48,7 +58,7 @@ async function loadMealsByCategory(category) {
                 <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
                 <h3>${meal.strMeal}</h3>
             `;
-
+            
             card.addEventListener("click", () => {
                 window.open(`https://www.themealdb.com/meal/${meal.idMeal}`, "_blank");
             });
@@ -62,5 +72,7 @@ async function loadMealsByCategory(category) {
     }
 }
 
-// Initial load
+// ==============================
+// Initial Load
+// ==============================
 loadCategories();

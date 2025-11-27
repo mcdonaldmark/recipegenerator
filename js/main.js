@@ -1,31 +1,34 @@
-// main.js
+// ==============================
+// main.js - Recipe Finder with Ingredient Info
+// ==============================
 
 import { findRecipes } from "./api.js";
 import { addIngredientToList, renderRecipes } from "./ui.js";
 
-// Restore ingredients and recipes from localStorage, or empty arrays
 let ingredients = JSON.parse(localStorage.getItem("ingredients")) || [];
-let recipesMap = new Map(); // Map to store recipes by ID
-let ingredientInfoMap = new Map(); // Map to store Open Food Facts data per ingredient
+let recipesMap = new Map();
+let ingredientInfoMap = new Map();
 
 const ingredientForm = document.querySelector("#ingredientForm");
 const ingredientInput = document.querySelector("#ingredientInput");
 
-// Restore previous ingredients in the UI
-ingredients.forEach(ingredient => addIngredientToList(ingredient, ingredients, updateRecipes));
+// ==============================
+// Restore previous state from localStorage
+// ==============================
+ingredients.forEach((ingredient) => addIngredientToList(ingredient, ingredients, updateRecipes));
 
-// Restore previous recipes from localStorage
 const savedRecipes = JSON.parse(localStorage.getItem("recipes")) || [];
-savedRecipes.forEach(r => recipesMap.set(r.id, r));
+savedRecipes.forEach((r) => recipesMap.set(r.id, r));
 if (recipesMap.size > 0) renderRecipes(Array.from(recipesMap.values()), ingredients);
 
-// Restore previous ingredient info
 const savedInfo = JSON.parse(localStorage.getItem("ingredientInfo")) || {};
 for (const [key, value] of Object.entries(savedInfo)) {
   ingredientInfoMap.set(key, value);
 }
 
-// Add ingredient via form submit
+// ==============================
+// Add Ingredient
+// ==============================
 ingredientForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const value = ingredientInput.value.trim();
@@ -37,17 +40,16 @@ ingredientForm.addEventListener("submit", async (e) => {
   addIngredientToList(value, ingredients, updateRecipes);
   ingredientInput.value = "";
 
-  // Fetch Open Food Facts info for this ingredient
   await fetchIngredientInfo(normalizedValue);
 
   updateRecipes();
 });
 
-// ---------------------------
-// Fetch Open Food Facts info
-// ---------------------------
+// ==============================
+// Fetch Open Food Facts Data
+// ==============================
 async function fetchIngredientInfo(ingredient) {
-  if (ingredientInfoMap.has(ingredient)) return; // Already fetched
+  if (ingredientInfoMap.has(ingredient)) return;
 
   const searchUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
     ingredient
@@ -56,14 +58,15 @@ async function fetchIngredientInfo(ingredient) {
   try {
     const res = await fetch(searchUrl);
     const data = await res.json();
-    // Store first 5 results for simplicity
-    const products = data.products.map(p => ({
+
+    const products = data.products.map((p) => ({
       name: p.product_name || "Unknown",
       brand: p.brands || "Unknown",
       nutrition_grade: p.nutrition_grades || "N/A",
       barcode: p.code || "N/A",
-      url: p.url || "#"
+      url: p.url || "#",
     }));
+
     ingredientInfoMap.set(ingredient, products);
     saveIngredientInfo();
   } catch (err) {
@@ -72,9 +75,9 @@ async function fetchIngredientInfo(ingredient) {
   }
 }
 
-// ---------------------------
-// Function to update recipes dynamically
-// ---------------------------
+// ==============================
+// Update Recipes Dynamically
+// ==============================
 async function updateRecipes() {
   const resultsContainer = document.querySelector("#results");
 
@@ -105,7 +108,7 @@ async function updateRecipes() {
             id: r.id,
             title: r.title,
             image: r.image,
-            ingredients: ingredientsList
+            ingredients: ingredientsList,
           });
         } catch (err) {
           console.error("Error fetching meal details:", err);
@@ -114,23 +117,23 @@ async function updateRecipes() {
     })
   );
 
-  // Convert Map to array for rendering
   const recipes = Array.from(recipesMap.values());
 
-  const normalizedUserIngredients = ingredients.map(i => i.toLowerCase().trim());
+  const normalizedUserIngredients = ingredients.map((i) => i.toLowerCase().trim());
   recipes.sort((a, b) => {
-    const aMatch = a.ingredients.filter(i => normalizedUserIngredients.includes(i)).length;
-    const bMatch = b.ingredients.filter(i => normalizedUserIngredients.includes(i)).length;
+    const aMatch = a.ingredients.filter((i) => normalizedUserIngredients.includes(i)).length;
+    const bMatch = b.ingredients.filter((i) => normalizedUserIngredients.includes(i)).length;
     return bMatch - aMatch;
   });
 
   renderRecipes(recipes, ingredients);
+
   saveState();
 }
 
-// ---------------------------
-// Save ingredient info to localStorage
-// ---------------------------
+// ==============================
+// Save Ingredient Info to localStorage
+// ==============================
 function saveIngredientInfo() {
   const obj = {};
   ingredientInfoMap.forEach((value, key) => {
@@ -139,9 +142,9 @@ function saveIngredientInfo() {
   localStorage.setItem("ingredientInfo", JSON.stringify(obj));
 }
 
-// ---------------------------
-// Save overall state
-// ---------------------------
+// ==============================
+// Save Overall State to localStorage
+// ==============================
 function saveState() {
   localStorage.setItem("ingredients", JSON.stringify(ingredients));
   localStorage.setItem("recipes", JSON.stringify(Array.from(recipesMap.values())));
