@@ -387,7 +387,6 @@ button:hover {
     color: var(--color-secondary);
 }
 
-/* ----- Mobile Responsive Styles ----- */
 @media (max-width: 768px) {
 
     /* General body padding reduction */
@@ -447,9 +446,9 @@ button:hover {
         font-size: 0.75rem;
     }
 
-    /* Recipe grid */
+    /* Recipe grid: exactly 2 cards per row */
     .recipe-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
@@ -458,7 +457,7 @@ button:hover {
     }
 
     .recipe-card img {
-        height: 120px;
+        height: 140px;
     }
 
     .recipe-card h3 {
@@ -473,7 +472,7 @@ button:hover {
 
     /* Category grid */
     .category-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
 
@@ -516,5 +515,18 @@ button:hover {
         padding: 8px 12px;
         font-size: 0.9rem;
         margin-top: 5px;
+    }
+}
+
+/* Optional: very small phones (≤480px) - 1 card per row */
+@media (max-width: 480px) {
+
+    .recipe-grid,
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recipe-card img {
+        height: 120px;
     }
 }
