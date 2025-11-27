@@ -386,3 +386,135 @@ button:hover {
 .back-link:hover {
     color: var(--color-secondary);
 }
+
+/* ----- Mobile Responsive Styles ----- */
+@media (max-width: 768px) {
+
+    /* General body padding reduction */
+    body {
+        padding: 10px;
+    }
+
+    /* Header adjustments */
+    header h1,
+    .header-with-logo h1 {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .header-with-logo .logo {
+        width: 45px;
+        height: 45px;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    /* Input section stack */
+    .input-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    input {
+        width: 100%;
+        font-size: 0.95rem;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    /* Ingredient list section */
+    .ingredient-list-section {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .ingredient-list li {
+        font-size: 0.95rem;
+    }
+
+    .remove-btn {
+        padding: 3px 6px;
+        font-size: 0.75rem;
+    }
+
+    /* Recipe grid */
+    .recipe-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
+    .recipe-card {
+        height: auto;
+    }
+
+    .recipe-card img {
+        height: 120px;
+    }
+
+    .recipe-card h3 {
+        font-size: 1rem;
+        margin: 8px;
+    }
+
+    .recipe-card p {
+        font-size: 0.85rem;
+        margin: 0 8px 8px 8px;
+    }
+
+    /* Category grid */
+    .category-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    .category-card img {
+        height: 70px;
+    }
+
+    .category-card h3 {
+        font-size: 0.85rem;
+    }
+
+    /* Shopping list page */
+    #shoppingList {
+        padding-left: 10px;
+    }
+
+    #clearShoppingListBtn {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.95rem;
+        margin-top: 10px;
+    }
+
+    /* Favorites page adjustments */
+    .recipe-card .favorite-btn,
+    .share-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+
+    /* Adjust input filter section in categories page */
+    #ingredientFilterInput {
+        width: 80%;
+        max-width: 300px;
+        font-size: 0.95rem;
+    }
+
+    #resetCategoryBtn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+}
