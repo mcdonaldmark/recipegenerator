@@ -37,7 +37,6 @@ async function fetchNutritionData(ingredient) {
   }
 
   try {
-    // 1) Search for the ingredient (limit to Foundation and SR Legacy for accuracy)
     const searchUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${FDC_API_KEY}&query=${encodeURIComponent(
       ingredient
     )}&pageSize=3&dataType=Foundation,SR Legacy`;
@@ -49,11 +48,9 @@ async function fetchNutritionData(ingredient) {
       return null;
     }
 
-    // Pick the first reliable result
     const food = searchData.foods[0];
     const fdcId = food.fdcId;
 
-    // 2) Get detailed nutrient data using fdcId
     const detailUrl = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${FDC_API_KEY}`;
     const detailRes = await fetch(detailUrl);
     const detailData = await detailRes.json();
@@ -68,7 +65,6 @@ async function fetchNutritionData(ingredient) {
       });
     }
 
-    // Convert raw FDC nutrient list → simplified macros
     const nutrition = {
       calories:
         nutrients["energy"]?.value ||
@@ -88,7 +84,6 @@ async function fetchNutritionData(ingredient) {
         "N/A",
     };
 
-    // Save to cache
     nutritionCache[key] = nutrition;
     localStorage.setItem("nutritionCache", JSON.stringify(nutritionCache));
 
@@ -110,43 +105,46 @@ async function renderShoppingList() {
     return;
   }
 
-  for (const ingredient of list) {
+  // First create all list items immediately
+  const liElements = list.map(ingredient => {
     const li = document.createElement("li");
     li.classList.add("fade-in");
-
     li.innerHTML = `
       <strong>${ingredient}</strong>
       <div class="nutrition-loading">Loading nutrition...</div>
       <button class="remove-btn">Remove</button>
     `;
-
     shoppingListContainer.appendChild(li);
+    return { ingredient, li };
+  });
 
-    // Load nutrition data
-    const nutrition = await fetchNutritionData(ingredient);
-    const infoBox = li.querySelector(".nutrition-loading");
+  // Fetch nutrition data in parallel
+  await Promise.all(
+    liElements.map(async ({ ingredient, li }) => {
+      const nutrition = await fetchNutritionData(ingredient);
+      const infoBox = li.querySelector(".nutrition-loading");
 
-    if (!nutrition) {
-      infoBox.innerHTML = `<span class="nutrition-info">No data available</span>`;
-    } else {
-      infoBox.innerHTML = `
-        <span class="nutrition-info">
-          ${nutrition.calories} kcal / 100g |
-          Fat: ${nutrition.fat}g |
-          Carbs: ${nutrition.carbs}g |
-          Protein: ${nutrition.protein}g
-        </span>
-      `;
-    }
+      if (!nutrition) {
+        infoBox.innerHTML = `<span class="nutrition-info">No data available</span>`;
+      } else {
+        infoBox.innerHTML = `
+          <span class="nutrition-info">
+            ${nutrition.calories} kcal / 100g |
+            Fat: ${nutrition.fat}g |
+            Carbs: ${nutrition.carbs}g |
+            Protein: ${nutrition.protein}g
+          </span>
+        `;
+      }
 
-    // Remove button functionality
-    const removeBtn = li.querySelector(".remove-btn");
-    removeBtn.addEventListener("click", () => {
-      removeIngredientFromList(ingredient);
-      renderShoppingList();
-      updateShoppingCount();
-    });
-  }
+      // Remove button functionality
+      li.querySelector(".remove-btn").addEventListener("click", () => {
+        removeIngredientFromList(ingredient);
+        renderShoppingList();
+        updateShoppingCount();
+      });
+    })
+  );
 
   updateShoppingCount();
 }
