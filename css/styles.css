@@ -112,7 +112,7 @@ button:hover {
 .ingredient-list li {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
     font-size: 1rem;
     color: var(--color-text);
     position: relative;
@@ -144,7 +144,7 @@ button:hover {
     background: #f5967b;
 }
 
-/* ----- Dynamic Recipe Cards (Index, Favorites, Categories Meals) ----- */
+/* ----- Dynamic Recipe Cards ----- */
 .recipe-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -163,7 +163,8 @@ button:hover {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 330px;
+    height: auto;
+    /* dynamic height based on content */
     position: relative;
 }
 
@@ -174,16 +175,43 @@ button:hover {
     display: block;
 }
 
+.recipe-card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* pushes button to bottom */
+    flex-grow: 1;
+    /* fills remaining vertical space */
+    padding: 12px;
+}
+
 .recipe-card h3 {
-    margin: 12px;
+    margin: 0;
     font-size: 1.2rem;
     color: var(--color-primary);
 }
 
 .recipe-card p {
-    margin: 0 12px 12px 12px;
+    margin: 4px 0;
     color: #555;
     font-size: 0.95rem;
+}
+
+.missing-btn {
+    margin-top: auto;
+    /* ensures button always sticks to bottom */
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.25s;
+}
+
+.missing-btn:hover {
+    background: var(--color-primary);
 }
 
 .recipe-card:hover {
@@ -206,6 +234,32 @@ button:hover {
 
 .recipe-card .favorite-btn:hover {
     transform: scale(1.2);
+}
+
+/* Share Button */
+.share-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 12;
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.share-btn:hover {
+    background: var(--color-primary);
+    transform: scale(1.1);
 }
 
 /* ----- Animations ----- */
@@ -265,7 +319,7 @@ button:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* ----- Center Categories Page Info & Lists ----- */
+/* Center Info & Lists */
 #categoriesSection,
 #categoryResultsSection,
 #userIngredientsSection,
@@ -284,40 +338,12 @@ button:hover {
     text-align: center;
 }
 
-/* ----- Share Button on Recipe Cards (Top-Left) ----- */
-.share-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 12;
-    background: var(--color-secondary);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s, background 0.2s;
-}
-
-.share-btn:hover {
-    background: var(--color-primary);
-    transform: scale(1.1);
-}
-
 /* Header with logo next to title */
 .header-with-logo .logo-title-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* centers container horizontally */
     gap: 15px;
-    /* space between H1 and logo */
 }
 
 .header-with-logo h1 {
@@ -328,13 +354,11 @@ button:hover {
 
 .header-with-logo .logo {
     width: 60px;
-    /* adjust as needed */
     height: 60px;
     object-fit: contain;
     animation: logoBounce 2s infinite;
 }
 
-/* Bounce animation */
 @keyframes logoBounce {
 
     0%,
@@ -387,14 +411,12 @@ button:hover {
     color: var(--color-secondary);
 }
 
+/* ----- Responsive Styles ----- */
 @media (max-width: 768px) {
-
-    /* General body padding reduction */
     body {
         padding: 10px;
     }
 
-    /* Header adjustments */
     header h1,
     .header-with-logo h1 {
         font-size: 1.8rem;
@@ -414,7 +436,6 @@ button:hover {
         margin-top: 10px;
     }
 
-    /* Input section stack */
     .input-section {
         flex-direction: column;
         align-items: stretch;
@@ -431,7 +452,6 @@ button:hover {
         font-size: 1rem;
     }
 
-    /* Ingredient list section */
     .ingredient-list-section {
         width: 100%;
         padding: 15px;
@@ -446,7 +466,6 @@ button:hover {
         font-size: 0.75rem;
     }
 
-    /* Recipe grid: exactly 2 cards per row */
     .recipe-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
@@ -462,7 +481,7 @@ button:hover {
 
     .recipe-card h3 {
         font-size: 1rem;
-        margin: 8px;
+        margin: 8px 0;
     }
 
     .recipe-card p {
@@ -470,7 +489,6 @@ button:hover {
         margin: 0 8px 8px 8px;
     }
 
-    /* Category grid */
     .category-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
@@ -483,42 +501,9 @@ button:hover {
     .category-card h3 {
         font-size: 0.85rem;
     }
-
-    /* Shopping list page */
-    #shoppingList {
-        padding-left: 10px;
-    }
-
-    #clearShoppingListBtn {
-        width: 100%;
-        padding: 10px;
-        font-size: 0.95rem;
-        margin-top: 10px;
-    }
-
-    /* Favorites page adjustments */
-    .recipe-card .favorite-btn,
-    .share-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 0.9rem;
-    }
-
-    /* Adjust input filter section in categories page */
-    #ingredientFilterInput {
-        width: 80%;
-        max-width: 300px;
-        font-size: 0.95rem;
-    }
-
-    #resetCategoryBtn {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-        margin-top: 5px;
-    }
 }
 
-/* Optional: very small phones (≤480px) - 1 card per row */
+/* Very small phones (≤480px) */
 @media (max-width: 480px) {
 
     .recipe-grid,

@@ -6,7 +6,7 @@ const shoppingListContainer = document.getElementById("shoppingList");
 const clearBtn = document.getElementById("clearShoppingListBtn");
 
 // ➜ Your USDA API key goes here
-const FDC_API_KEY = "YOUR_FDC_API_KEY_HERE";
+const FDC_API_KEY = "VvAc3udjrHDwwDP71isedePavcgetySZnFaQ8dLv";
 
 // Cache nutrition data so we don’t fetch the same item twice
 let nutritionCache = JSON.parse(localStorage.getItem("nutritionCache")) || {};
