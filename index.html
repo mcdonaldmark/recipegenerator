@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Generator</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header>
+        <header class="header-with-logo">
+            <div class="logo-title-container">
+                <h1>What Can I Cook?</h1>
+                <img src="images/applicationIcon.png" alt="Logo" class="logo">
+            </div>
+            <p>Enter the ingredients you already have at home.</p>
+            <nav>
+                <a href="favorites.html" class="favorites-link">💖 Favorites</a>
+                <a href="categories.html" class="categories-link">🍽️ Categories</a>
+                <!-- Shopping Cart Button with badge -->
+                <a href="shopping-list.html" class="shopping-link" id="shoppingCartBtn">
+                    🛒 Shopping List
+                    <span id="shoppingCount" class="cart-badge">0</span>
+                </a>
+            </nav>
+        </header>
+    </header>
+
+    <main>
+        <!-- Ingredients Section -->
+        <section class="input-section">
+            <form id="ingredientForm">
+                <input id="ingredientInput" type="text" placeholder="e.g.: chicken, rice, onion" />
+                <button type="submit">Add Ingredient</button>
+            </form>
+        </section>
+
+        <!-- Ingredient List -->
+        <section class="ingredient-list-section">
+            <h2>Your Ingredients</h2>
+            <ul class="ingredient-list" id="ingredientList"></ul>
+        </section>
+
+        <!-- Recipes Section -->
+        <section class="results-section">
+            <h2 id="recipe">Recipes</h2>
+            <div id="results" class="recipe-grid"></div>
+        </section>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/shopping-cart.js"></script>
+</body>
+
+</html>

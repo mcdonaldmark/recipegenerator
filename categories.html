@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Categories</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header>
+        <header class="header-with-logo">
+            <div class="logo-title-container">
+        <h1>Recipe Categories</h1>
+        <img src="images/applicationIcon.png" alt="Logo" class="logo">
+        </div>
+        <nav>
+            <a href="index.html" class="favorites-link">⬅ Back to Home</a>
+            <a href="favorites.html" class="favorites-link">💖 Favorites</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Categories Grid -->
+        <section id="categoriesSection">
+            <h2>All Categories</h2>
+            <div id="categoriesList" class="category-grid"></div>
+        </section>
+
+        <!-- Ingredient Filter -->
+        <section id="ingredientFilterSection" style="text-align: center; margin: 20px 0;">
+            <input type="text" id="ingredientFilterInput" placeholder="Filter meals by ingredient..." />
+            <button id="resetCategoryBtn">Reset</button>
+        </section>
+
+        <!-- Meals in Selected Category -->
+        <section id="categoryResultsSection">
+            <h2 id="selectedCategoryTitle">Meals</h2>
+            <div id="categoryResults" class="recipe-grid"></div>
+        </section>
+    </main>
+
+    <script type="module" src="js/categories-main.js"></script>
+</body>
+
+</html>
