@@ -6,6 +6,7 @@ import { addIngredientToList, renderRecipes } from "./ui.js";
 // Restore ingredients and recipes from localStorage, or empty arrays
 let ingredients = JSON.parse(localStorage.getItem("ingredients")) || [];
 let recipesMap = new Map(); // Map to store recipes by ID
+let ingredientInfoMap = new Map(); // Map to store Open Food Facts data per ingredient
 
 const ingredientForm = document.querySelector("#ingredientForm");
 const ingredientInput = document.querySelector("#ingredientInput");
@@ -18,20 +19,62 @@ const savedRecipes = JSON.parse(localStorage.getItem("recipes")) || [];
 savedRecipes.forEach(r => recipesMap.set(r.id, r));
 if (recipesMap.size > 0) renderRecipes(Array.from(recipesMap.values()), ingredients);
 
+// Restore previous ingredient info
+const savedInfo = JSON.parse(localStorage.getItem("ingredientInfo")) || {};
+for (const [key, value] of Object.entries(savedInfo)) {
+  ingredientInfoMap.set(key, value);
+}
+
 // Add ingredient via form submit
-ingredientForm.addEventListener("submit", (e) => {
+ingredientForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const value = ingredientInput.value.trim();
   if (!value) return;
 
-  ingredients.push(value.toLowerCase());
+  const normalizedValue = value.toLowerCase();
+
+  ingredients.push(normalizedValue);
   addIngredientToList(value, ingredients, updateRecipes);
   ingredientInput.value = "";
+
+  // Fetch Open Food Facts info for this ingredient
+  await fetchIngredientInfo(normalizedValue);
 
   updateRecipes();
 });
 
+// ---------------------------
+// Fetch Open Food Facts info
+// ---------------------------
+async function fetchIngredientInfo(ingredient) {
+  if (ingredientInfoMap.has(ingredient)) return; // Already fetched
+
+  const searchUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
+    ingredient
+  )}&search_simple=1&action=process&json=true&page_size=5`;
+
+  try {
+    const res = await fetch(searchUrl);
+    const data = await res.json();
+    // Store first 5 results for simplicity
+    const products = data.products.map(p => ({
+      name: p.product_name || "Unknown",
+      brand: p.brands || "Unknown",
+      nutrition_grade: p.nutrition_grades || "N/A",
+      barcode: p.code || "N/A",
+      url: p.url || "#"
+    }));
+    ingredientInfoMap.set(ingredient, products);
+    saveIngredientInfo();
+  } catch (err) {
+    console.error("Error fetching Open Food Facts data:", err);
+    ingredientInfoMap.set(ingredient, []);
+  }
+}
+
+// ---------------------------
 // Function to update recipes dynamically
+// ---------------------------
 async function updateRecipes() {
   const resultsContainer = document.querySelector("#results");
 
@@ -85,6 +128,20 @@ async function updateRecipes() {
   saveState();
 }
 
+// ---------------------------
+// Save ingredient info to localStorage
+// ---------------------------
+function saveIngredientInfo() {
+  const obj = {};
+  ingredientInfoMap.forEach((value, key) => {
+    obj[key] = value;
+  });
+  localStorage.setItem("ingredientInfo", JSON.stringify(obj));
+}
+
+// ---------------------------
+// Save overall state
+// ---------------------------
 function saveState() {
   localStorage.setItem("ingredients", JSON.stringify(ingredients));
   localStorage.setItem("recipes", JSON.stringify(Array.from(recipesMap.values())));
