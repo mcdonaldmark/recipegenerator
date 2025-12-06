@@ -36,8 +36,11 @@ ingredientForm.addEventListener("submit", async (e) => {
 
   const normalizedValue = value.toLowerCase();
 
-  ingredients.push(normalizedValue);
-  addIngredientToList(value, ingredients, updateRecipes);
+  if (!ingredients.includes(normalizedValue)) {
+    ingredients.push(normalizedValue);
+    addIngredientToList(value, ingredients, updateRecipes);
+  }
+
   ingredientInput.value = "";
 
   await fetchIngredientInfo(normalizedValue);
@@ -88,7 +91,15 @@ async function updateRecipes() {
     return;
   }
 
-  const rawRecipes = await findRecipes(ingredients);
+  let rawRecipes = [];
+  try {
+    rawRecipes = await findRecipes(ingredients);
+  } catch (err) {
+    console.error("Error fetching recipes:", err);
+    rawRecipes = [];
+  }
+
+  if (!Array.isArray(rawRecipes)) rawRecipes = []; // Safety fallback
 
   await Promise.all(
     rawRecipes.map(async (r) => {
@@ -96,7 +107,8 @@ async function updateRecipes() {
         try {
           const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${r.id}`);
           const data = await res.json();
-          const meal = data.meals[0];
+          const meal = data.meals?.[0];
+          if (!meal) return;
 
           const ingredientsList = [];
           for (let i = 1; i <= 20; i++) {
